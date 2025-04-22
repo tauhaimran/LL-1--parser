@@ -1,0 +1,42 @@
+
+basic - testing
+....................................
+S -> A B | epsilon
+S1 -> a
+A -> a | b | A1
+A132 -> x y | ( S )
+A' -> a
+B -> A'
+B -> C
+C -> ( S ) | epsilon
+X -> e Y | e Z
+
+</>
+
+
+leftfacting - testing
+....................................
+S -> A | A x 
+P -> A x | A | epsilon
+A ->  a a B | a a  C D
+B -> end
+C -> y B | y D
+D -> z
+
+</>
+
+
+leftRecursion - testing
+....................................
+S  -> S a | S b | A a | b  
+A  -> A c | S d | e 
+
+</>
+
+
+
+sets and stuff
+....................................
+S -> A B
+A -> a A | epsilon
+B -> b B | epsilon

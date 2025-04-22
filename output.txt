@@ -1,0 +1,49 @@
+---now--reading--file---
+CFG successfully loaded!
+Start Symbol: S
+Production Rules:
+S -> a A 
+S -> a B 
+S -> S b 
+S -> c 
+A -> A a 
+A -> b 
+-------------------------
+Step#1 -- left factoring..
+Start Symbol: S
+Production Rules:
+S -> S b 
+S -> c 
+A -> A a 
+A -> b 
+S -> a S' 
+S' -> A 
+S' -> B 
+Step#2 -- left recursion..
+Start Symbol: S
+Production Rules:
+S' -> b S' 
+S' -> epsilon 
+S -> c S' 
+S -> a S' S' 
+Step#3 -- computing first set..
+FIRST(S) Set: { epsilon a }
+FIRST(A) Set: { }
+FIRST(B) Set: { }
+FIRST(S') Set: { epsilon }
+Step#4 -- computing follow set..
+Adding $ to follow set of S
+FOLLOW(S) Set: { $ }
+FOLLOW(A) Set: { }
+FOLLOW(B) Set: { }
+FOLLOW(S') Set: { epsilon b }
+Step#5 -- LL(1) parsing table..
+
+LL(1) Parsing Table:
+
+                             a              b              c              $
+------------------------------------------------------------------------------------------
+              S|  S -> a S' S' |               |     S -> c S' |               |
+              A|               |               |               |               |
+              B|               |               |               |               |
+             S'|               |    S' -> b S' |               |               |
