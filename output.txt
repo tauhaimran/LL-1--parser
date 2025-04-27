@@ -2,48 +2,81 @@
 CFG successfully loaded!
 Start Symbol: S
 Production Rules:
-S -> a A 
-S -> a B 
-S -> S b 
-S -> c 
-A -> A a 
-A -> b 
+S -> StmtList 
+StmtList -> Stmt StmtList 
+StmtList -> epsilon 
+Stmt -> id = Expr ; 
+Stmt -> if ( Cond ) { StmtList } 
+Expr -> Term ExprPrime 
+ExprPrime -> + Term ExprPrime 
+ExprPrime -> - Term ExprPrime 
+ExprPrime -> epsilon 
+Term -> id 
+Term -> number 
+Cond -> Expr RelOp Expr 
+RelOp -> > 
+RelOp -> < 
+RelOp -> == 
+RelOp -> != 
 -------------------------
 Step#1 -- left factoring..
 Start Symbol: S
 Production Rules:
-S -> S b 
-S -> c 
-A -> A a 
-A -> b 
-S -> a S' 
-S' -> A 
-S' -> B 
+S -> StmtList 
+StmtList -> Stmt StmtList 
+StmtList -> epsilon 
+Stmt -> id = Expr ; 
+Stmt -> if ( Cond ) { StmtList } 
+Expr -> Term ExprPrime 
+ExprPrime -> + Term ExprPrime 
+ExprPrime -> - Term ExprPrime 
+ExprPrime -> epsilon 
+Term -> id 
+Term -> number 
+Cond -> Expr RelOp Expr 
+RelOp -> > 
+RelOp -> < 
+RelOp -> == 
+RelOp -> != 
 Step#2 -- left recursion..
 Start Symbol: S
 Production Rules:
-S' -> b S' 
-S' -> epsilon 
-S -> c S' 
-S -> a S' S' 
+S -> StmtList 
+StmtList -> Stmt StmtList 
+StmtList -> epsilon 
+Stmt -> id = Expr ; 
+Stmt -> if ( Cond ) { StmtList } 
+Expr -> Term ExprPrime 
+ExprPrime -> + Term ExprPrime 
+ExprPrime -> - Term ExprPrime 
+ExprPrime -> epsilon 
+Term -> id 
+Term -> number 
+Cond -> Term ExprPrime RelOp Expr 
+RelOp -> > 
+RelOp -> < 
+RelOp -> == 
+RelOp -> != 
 Step#3 -- computing first set..
-FIRST(S) Set: { epsilon a }
-FIRST(A) Set: { }
-FIRST(B) Set: { }
-FIRST(S') Set: { epsilon }
+Adding Stmt's set to to first set of StmtList
+Adding Stmt's set to to first set of StmtList
+Adding StmtList's set to to first set of S
+Adding StmtList's set to to first set of S
+Adding Stmt's set to to first set of StmtList
+Adding Stmt's set to to first set of StmtList
+Adding Stmt's set to to first set of StmtList
+Adding Term's set to to first set of Expr
+Adding Term's set to to first set of Expr
+Adding Term's set to to first set of Cond
+Adding Term's set to to first set of Cond
+Adding Term's set to to first set of Cond
+FIRST(S) Set: { epsilon if }
+FIRST(StmtList) Set: { epsilon if id }
+FIRST(Stmt) Set: { epsilon if id }
+FIRST(Expr) Set: { epsilon number }
+FIRST(Cond) Set: { epsilon number id }
+FIRST(Term) Set: { epsilon number id }
+FIRST(ExprPrime) Set: { epsilon - }
+FIRST(RelOp) Set: { epsilon < == != }
 Step#4 -- computing follow set..
 Adding $ to follow set of S
-FOLLOW(S) Set: { $ }
-FOLLOW(A) Set: { }
-FOLLOW(B) Set: { }
-FOLLOW(S') Set: { epsilon b }
-Step#5 -- LL(1) parsing table..
-
-LL(1) Parsing Table:
-
-                             a              b              c              $
-------------------------------------------------------------------------------------------
-              S|  S -> a S' S' |               |     S -> c S' |               |
-              A|               |               |               |               |
-              B|               |               |               |               |
-             S'|               |    S' -> b S' |               |               |

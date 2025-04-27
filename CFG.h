@@ -25,6 +25,9 @@ public:
     // Constructor to initialize the CFG with a starting symbol
     CFG(const State& startSymbol) : startSymbol(startSymbol) {}
 
+    // Default constructor
+    CFG() : startSymbol(State("S", "start-state")) {}
+
     // Adds a non-terminal state to the grammar if it doesn't already exist
     void addNonTerminal(const State& nonTerminal) { 
         if( isInNonTerminals(nonTerminal) == false) {

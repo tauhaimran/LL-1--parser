@@ -1,2 +1,2 @@
-S -> a A | a B | S b | c
-A -> A a | b
+id = number ;
+if ( id == number ) { id = number; }

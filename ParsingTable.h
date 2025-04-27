@@ -13,7 +13,7 @@ private:
     std::vector<std::string> terminals;
 
     // Helper function to find the index of a symbol (NonTerminal or Terminal)
-    int findIndex(const std::vector<std::string>& symbols, const std::string& symbol) {
+    int findIndex(const std::vector<std::string>& symbols, const std::string& symbol) const {
         for (int i = 0; i < symbols.size(); ++i) {
             if (symbols[i] == symbol) {
                 return i;
@@ -41,6 +41,20 @@ public:
         } else {
             table[row][col] += " | " + production; // Handle conflicts by showing alternatives
         }
+    }
+
+    // Get the production rule from the table
+    std::string getEntry(const std::string& nonTerminal, const std::string& terminal) const {
+        int row = findIndex(nonTerminals, nonTerminal);
+        int col = findIndex(terminals, terminal);
+        
+        if (row == -1 || col == -1) return "";
+        return table[row][col];
+    }
+
+    // Get the list of terminals
+    std::vector<std::string> getTerminals() const {
+        return terminals;
     }
 
     // Display the parsing table
