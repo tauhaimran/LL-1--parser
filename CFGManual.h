@@ -112,10 +112,7 @@ void createManualCFG(CFG& cfg) {
     cfg.addProductionRule(rule16);
 }
 
-// Function to initialize the parsing table manually
 void initializeParsingTable(ParsingTable& table) {
-    // Manually add entries to the parsing table for your grammar
-    
     // S -> StmtList
     table.addEntry("S", "id", "StmtList");
     table.addEntry("S", "if", "StmtList");
@@ -125,9 +122,8 @@ void initializeParsingTable(ParsingTable& table) {
     table.addEntry("StmtList", "if", "Stmt StmtList");
 
     // StmtList -> epsilon
-    table.addEntry("StmtList", ";", "epsilon");
-    table.addEntry("StmtList", "}", "epsilon");
-
+    table.addEntry("StmtList", "}", "epsilon"); // FOLLOW(StmtList) contains }
+    
     // Stmt -> id = Expr ;
     table.addEntry("Stmt", "id", "id = Expr ;");
 
@@ -144,9 +140,13 @@ void initializeParsingTable(ParsingTable& table) {
     // ExprPrime -> - Term ExprPrime
     table.addEntry("ExprPrime", "-", "- Term ExprPrime");
 
-    // ExprPrime -> epsilon
-    table.addEntry("ExprPrime", "id", "epsilon");
-    table.addEntry("ExprPrime", "number", "epsilon");
+    // ExprPrime -> epsilon (FOLLOW(ExprPrime) = { ;, ), >, <, ==, != })
+    table.addEntry("ExprPrime", ";", "epsilon");
+    table.addEntry("ExprPrime", ")", "epsilon");
+    table.addEntry("ExprPrime", ">", "epsilon");
+    table.addEntry("ExprPrime", "<", "epsilon");
+    table.addEntry("ExprPrime", "==", "epsilon");
+    table.addEntry("ExprPrime", "!=", "epsilon");
 
     // Term -> id
     table.addEntry("Term", "id", "id");
@@ -154,11 +154,9 @@ void initializeParsingTable(ParsingTable& table) {
     // Term -> number
     table.addEntry("Term", "number", "number");
 
-    // Cond -> id ExprPrime RelOp Expr
-    table.addEntry("Cond", "id", "id ExprPrime RelOp Expr");
-
-    // Cond -> number ExprPrime RelOp Expr
-    table.addEntry("Cond", "number", "number ExprPrime RelOp Expr");
+    // Cond -> Expr RelOp Expr
+    table.addEntry("Cond", "id", "Expr RelOp Expr");
+    table.addEntry("Cond", "number", "Expr RelOp Expr");
 
     // RelOp -> >
     table.addEntry("RelOp", ">", ">");
@@ -172,6 +170,7 @@ void initializeParsingTable(ParsingTable& table) {
     // RelOp -> !=
     table.addEntry("RelOp", "!=", "!=");
 }
+
 
 #endif // CFGMANUAL_H
 // CFGMANUAL_H

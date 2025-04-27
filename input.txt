@@ -1,2 +1,3 @@
 id = number ;
-
+if ( id == number ) { 
+id = number ; }

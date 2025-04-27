@@ -52,14 +52,21 @@ int main() {
     // Create the parser
     Parser parser(table, inputFile);
 
+    // shwoing the grammar / cfg
+    std::cout << "----------------------------------------" << std::endl;
+    std::cout << "Grammar / CFG: " << std::endl;
+    cfg.display(); // Display the CFG
+    cfg.showNonTerminals(); // Show non-terminals
+    cfg.showTerminals(); // Show terminals
     // Parse the input file
+    std::cout << "----------------------------------------" << std::endl;
     table.display(); // Display the parsing table
     std::cout << "Parsing input file: " << inputFile << std::endl;
     std::cout << "Parsing content: " << std::endl;
     std::cout << "----------------------------------------" << std::endl;
-    //parser.displayInput();
+    parser.displayInput();
     //std::cout << "----------------------------------------" << std::endl;
-    //parser.displayStack();
+    parser.displayStack();
     std::cout << "----------------------------------------" << std::endl;
     std::cout << std::endl;
     std::cout << "Parsing result: " << std::endl;

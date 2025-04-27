@@ -16,7 +16,7 @@ private:
     ParsingTable& parsingTable;  // Reference to the parsing table
     std::vector<std::string> inputTokens;  // List of input tokens to be parsed
     std::stack<std::string> parseStack;  // Stack to hold the parse process
-
+public:
     // Helper function to read and tokenize input from a file
     void tokenizeInput(const std::string& filename) {
         std::ifstream file(filename);
@@ -53,12 +53,12 @@ private:
     void displayInput() const {
         std::cout << "Input Tokens: ";
         for (const auto& token : inputTokens) {
-            std::cout << token << " ";
+            std::cout << token << " , ";
         }
-        std::cout << std::endl;
+        std::cout << "$" << std::endl;
     }
 
-public:
+
     // Constructor that initializes the parser with the parsing table and input file
     Parser(ParsingTable& table, const std::string& inputFile) : parsingTable(table) {
         tokenizeInput(inputFile);  // Tokenize the input file
@@ -72,50 +72,70 @@ void parse() {
     std::string currentToken = getNextToken();
 
     while (!parseStack.empty()) {
-        std::string topOfStack = parseStack.top();  // Get the symbol at the top of the stack
-        parseStack.pop();  // Pop it off the stack
+        std::string topOfStack = parseStack.top();  // Peek (don't pop yet)
 
         // Show the current state
         displayStack();
         displayInput();
+        std::cout << "--------------------------" << std::endl;
+        std::cout << "Top of stack: " << topOfStack << std::endl;
         std::cout << "Current token: " << currentToken << std::endl;
 
-        // Check if we've successfully parsed the entire input
+        // Case 1: If both are $, successful parse
         if (topOfStack == "$" && currentToken == "$") {
             std::cout << "Parsing successful! Reached end of input." << std::endl;
             return;
         }
 
-        // If the top of the stack is a terminal
+        // Case 2: Top of stack is a terminal
         if (isTerminal(topOfStack)) {
             if (topOfStack == currentToken) {
                 std::cout << "Matched terminal: " << currentToken << std::endl;
-                inputTokens.erase(inputTokens.begin());  // Move to next token
-                currentToken = getNextToken();  // Get the next token
+                parseStack.pop();  // Now pop
+                inputTokens.erase(inputTokens.begin());  // Move to next input token
+                currentToken = getNextToken();  // Fetch next token
             } else {
                 std::cout << "Error: Unexpected token '" << currentToken << "' when expecting '" << topOfStack << "'." << std::endl;
-                return;  // Parsing failed due to a mismatch
+                return;  // Parsing failed
             }
-        } else {
-            // If the top of the stack is a non-terminal, apply the production rule
+        }
+        // Case 3: Top of stack is a non-terminal
+        else {
             std::string rule = parsingTable.getEntry(topOfStack, currentToken);
             if (!rule.empty()) {
                 std::cout << "Expanding non-terminal '" << topOfStack << "' with rule: " << rule << std::endl;
+                parseStack.pop();  // Pop AFTER getting the rule
 
-                // Push the rule's right-hand side in reverse order onto the stack
+                // Push the rule's RHS onto the stack in reverse
+                std::vector<std::string> symbols;
                 std::istringstream ruleStream(rule);
                 std::string symbol;
                 while (ruleStream >> symbol) {
-                    if (symbol != "epsilon") {  // Skip epsilon (empty) rules
-                        parseStack.push(symbol);  // Push non-terminals to the stack
+                    if (symbol != "epsilon") {
+                        symbols.push_back(symbol);
                     }
                 }
+                // Push in reverse order
+                for (auto it = symbols.rbegin(); it != symbols.rend(); ++it) {
+                    parseStack.push(*it);
+                }
             } else {
-                std::cout << "Error: No matching rule for '" << topOfStack << "' with input '" << currentToken << "'." << std::endl;
-                return;  // Parsing failed due to no matching rule
+                if(currentToken == "$") {
+                    std::cout << "Error: Unexpected end of input when expecting non-terminal '" << topOfStack << "'." << std::endl;
+                    std::cout << "Parsing Kinda Passed: Stack is empty but input is not completely parsed." << std::endl;
+                    return;  // Parsing sorta passed but not really
+                }
+                std::cout << "Error: No matching rule for non-terminal '" << topOfStack << "' with input '" << currentToken << "'." << std::endl;
+                return;  // Parsing failed
             }
         }
     }
+
+    // If stack is empty but input isn't consumed fully
+    if (currentToken != "$") {
+        std::cout << "Error: Input not fully consumed. Remaining token: " << currentToken << std::endl;
+    }
+
 
     // If we've exhausted the stack without fully parsing the input
     std::cout << "Parsing failed: Stack is empty but input is not completely parsed." << std::endl;
@@ -124,7 +144,15 @@ void parse() {
 
     // Helper function to check if a symbol is a terminal
     bool isTerminal(const std::string& symbol) {
-        return std::find(parsingTable.getTerminals().begin(), parsingTable.getTerminals().end(), symbol) != parsingTable.getTerminals().end();
+        bool isTerminal = false;
+        std::vector<std::string> terminals = parsingTable.getTerminals();  // Get the list of terminals
+        for (const auto& terminal : terminals) {
+            if (symbol == terminal) {
+                isTerminal = true;  // Found a match in the list of terminals
+                break;
+            }
+        }
+        return isTerminal;
     }
 };
 
