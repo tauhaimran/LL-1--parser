@@ -4,7 +4,7 @@
 #include <iostream>
 #include "CFG.h"
 
-/* Grammar Definitions
+/*Grammar Definitions
 S -> StmtList
 StmtList -> Stmt StmtList | ε
 Stmt -> id = Expr ; | if ( Cond ) { StmtList }
