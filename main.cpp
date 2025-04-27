@@ -1,76 +1,38 @@
 #include <iostream>
 #include <fstream>
-#include "Parser.h"
+#include "parser.h"
 #include "CFGManual.h"
 
 int main() {
-
     // Initialize CFG object
     CFG cfg;
-
-    // Create the manual CFG using the function from CFGManual.h
-    createManualCFG(cfg);
-
-    // Testing CFG
+    createManualCFG(cfg); // Populates cfg with grammar
     cfg.leftFactoring();
     cfg.eliminateLeftRecursion();
     cfg.computeALLFirstSets();
-    //cfg.computeAllFollowSets();
-    //cfg.displayFirstSets();
-    //cfg.displayFollowSets();
-    //cfg.computeLL1ParsingTable();
-    //cfg.display();
-    //cfg.showNonTerminals();
-    //cfg.showTerminals();
-    //cfg.displayFirstSets();
+    // cfg.computeAllFollowSets(); // Uncomment if needed
 
-    //std::vector<std::string> nonTerminals = {"S", "StmtList", "Stmt", "Expr", "ExprPrime", "Term", "Cond", "RelOp"};
-    //std::vector<std::string> terminals = {"id", "number", "=", "+", "-", ";", "if", "(", ")", "{", "}", ">", "<", "==", "!="};
-
-    // Create the parsing table
-    //ParsingTable table(nonTerminals, terminals);
-
-    // Initialize the parsing table with grammar rules
-    //initializeParsingTable(table);
-
-    // Display the parsing table
-    //table.display();
-
-    // Define the non-terminals and terminals
+    // Define non-terminals and terminals (include $)
     std::vector<std::string> nonTerminals = {"S", "StmtList", "Stmt", "Expr", "ExprPrime", "Term", "Cond", "RelOp"};
-    std::vector<std::string> terminals = {"id", "number", "=", "+", "-", ";", "if", "(", ")", "{", "}", ">", "<", "==", "!="};
+    std::vector<std::string> terminals = {"id", "number", "=", "+", "-", ";", "if", "(", ")", "{", "}", ">", "<", "==", "!=", "$"};
 
-    // Create the parsing table
+    // Create and initialize the parsing table
     ParsingTable table(nonTerminals, terminals);
-
-    // Initialize the parsing table with grammar rules
     initializeParsingTable(table);
 
-    // Specify the input file to parse (e.g., "input.txt")
-    std::string inputFile = "input.txt";
-
-    // Create the parser
-    Parser parser(table, inputFile);
-
-    // shwoing the grammar / cfg
+    // Display CFG and parsing table
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "Grammar / CFG: " << std::endl;
-    cfg.display(); // Display the CFG
-    cfg.showNonTerminals(); // Show non-terminals
-    cfg.showTerminals(); // Show terminals
-    // Parse the input file
+    cfg.display();
+    cfg.showNonTerminals();
+    cfg.showTerminals();
     std::cout << "----------------------------------------" << std::endl;
-    table.display(); // Display the parsing table
-    std::cout << "Parsing input file: " << inputFile << std::endl;
-    std::cout << "Parsing content: " << std::endl;
+    table.display();
+    std::cout << "Parsing input file: input.txt" << std::endl;
     std::cout << "----------------------------------------" << std::endl;
-    parser.displayInput();
-    //std::cout << "----------------------------------------" << std::endl;
-    parser.displayStack();
-    std::cout << "----------------------------------------" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Parsing result: " << std::endl;
-    std::cout << "----------------------------------------" << std::endl;
+
+    // Create and run parser
+    Parser parser(table, "input.txt", cfg);
     parser.parse();
 
     return 0;

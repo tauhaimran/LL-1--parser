@@ -28,6 +28,8 @@ public:
     // Default constructor
     CFG() : startSymbol(State("S", "start-state")) {}
 
+    std::vector<State> getNonTerminals() const { return nonTerminals; }
+    std::vector<State> getTerminals() const { return terminals; }
     // Adds a non-terminal state to the grammar if it doesn't already exist
     void addNonTerminal(const State& nonTerminal) { 
         if( isInNonTerminals(nonTerminal) == false) {

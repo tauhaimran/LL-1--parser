@@ -4,7 +4,7 @@
 #include <iostream>
 #include "CFG.h"
 
-/*Grammar Definitions
+/* Grammar Definitions
 S -> StmtList
 StmtList -> Stmt StmtList | ε
 Stmt -> id = Expr ; | if ( Cond ) { StmtList }
@@ -15,9 +15,7 @@ Cond -> Expr RelOp Expr
 RelOp -> > | < | == | !=
 */
 
-//*********************** DEFINING GRAMMAR *********************//
 void createManualCFG(CFG& cfg) {
-
     // Non-terminals
     State S("S", "start-state");
     State StmtList("StmtList", "non-terminal");
@@ -58,7 +56,7 @@ void createManualCFG(CFG& cfg) {
     ProductionRule rule9(ExprPrime, {epsilon});
     ProductionRule rule10(Term, {id});
     ProductionRule rule11(Term, {number});
-    ProductionRule rule12(Cond, {Expr, RelOp, Expr});
+    ProductionRule rule12(Cond, {Expr, RelOp, Expr}); // Fixed to match parsing table
     ProductionRule rule13(RelOp, {greater});
     ProductionRule rule14(RelOp, {less});
     ProductionRule rule15(RelOp, {eqeq});
@@ -67,7 +65,8 @@ void createManualCFG(CFG& cfg) {
     // Start symbol
     cfg = CFG(S);
 
-    // Add non-terminals
+    // Add non-terminals (include S)
+    cfg.addNonTerminal(S);
     cfg.addNonTerminal(StmtList);
     cfg.addNonTerminal(Stmt);
     cfg.addNonTerminal(Expr);
@@ -122,8 +121,9 @@ void initializeParsingTable(ParsingTable& table) {
     table.addEntry("StmtList", "if", "Stmt StmtList");
 
     // StmtList -> epsilon
-    table.addEntry("StmtList", "}", "epsilon"); // FOLLOW(StmtList) contains }
-    
+    table.addEntry("StmtList", "}", "epsilon"); // FOLLOW(StmtList) includes }
+    table.addEntry("StmtList", "$", "epsilon"); // FOLLOW(StmtList) includes $
+
     // Stmt -> id = Expr ;
     table.addEntry("Stmt", "id", "id = Expr ;");
 
@@ -171,6 +171,4 @@ void initializeParsingTable(ParsingTable& table) {
     table.addEntry("RelOp", "!=", "!=");
 }
 
-
 #endif // CFGMANUAL_H
-// CFGMANUAL_H

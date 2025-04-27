@@ -1,1 +1,124 @@
 ---now--reading--file---
+Adding Stmt's set to to first set of StmtList
+Adding Stmt's set to to first set of StmtList
+Adding StmtList's set to to first set of S
+Adding StmtList's set to to first set of S
+Adding Stmt's set to to first set of StmtList
+Adding Stmt's set to to first set of StmtList
+Adding Stmt's set to to first set of StmtList
+Adding Term's set to to first set of Expr
+Adding Term's set to to first set of Expr
+----------------------------------------
+Grammar / CFG: 
+Start Symbol: S
+Production Rules:
+S -> StmtList 
+StmtList -> Stmt StmtList 
+StmtList -> epsilon 
+Stmt -> id = Expr ; 
+Stmt -> if ( Cond ) { StmtList } 
+Expr -> Term ExprPrime 
+ExprPrime -> + Term ExprPrime 
+ExprPrime -> - Term ExprPrime 
+ExprPrime -> epsilon 
+Term -> id 
+Term -> number 
+Cond -> id ExprPrime RelOp Expr 
+Cond -> number ExprPrime RelOp Expr 
+RelOp -> > 
+RelOp -> < 
+RelOp -> == 
+RelOp -> != 
+Non-terminals: 
+S       (start-state) ,  
+StmtList        (non-terminal) ,  
+Stmt    (non-terminal) ,  
+Expr    (non-terminal) ,  
+ExprPrime       (non-terminal) ,  
+Term    (non-terminal) ,  
+Cond    (non-terminal) ,  
+RelOp   (non-terminal) ,  
+
+Terminals: 
+id      (terminal) ,  
+number  (terminal) ,  
+=       (terminal) ,  
++       (terminal) ,  
+-       (terminal) ,  
+;       (terminal) ,  
+if      (terminal) ,  
+(       (terminal) ,  
+)       (terminal) ,  
+{       (terminal) ,  
+}       (terminal) ,  
+>       (terminal) ,  
+<       (terminal) ,  
+==      (terminal) ,  
+!=      (terminal) ,  
+
+----------------------------------------
+
+LL(1) Parsing Table:
+Non-Terminal\Terminal   id      number  =       +       -       ;       if      (       )       {       }       >       <       ==      !=      $
+S               StmtList        -       -       -       -       -       StmtList        -       -       -       -       -       -       -       -       -
+StmtList                Stmt StmtList   -       -       -       -       -       Stmt StmtList   -       -       -       epsilon -       -       -       -       epsilon
+Stmt            id = Expr ;     -       -       -       -       -       if ( Cond ) { StmtList }        -       -       -       -       -       -       -       -       -
+Expr            Term ExprPrime  Term ExprPrime  -       -       -       -       -       -       -       -       -       -       -       -       -       -
+ExprPrime               -       -       -       + Term ExprPrime        - Term ExprPrime        epsilon -       -       epsilon -       -       epsilon epsilon epsilon epsilon -
+Term            id      number  -       -       -       -       -       -       -       -       -       -       -       -       -       -
+Cond            Expr RelOp Expr Expr RelOp Expr -       -       -       -       -       -       -       -       -       -       -       -       -       -
+RelOp           -       -       -       -       -       -       -       -       -       -       -       >       <       ==      !=      -
+Parsing input file: input.txt
+----------------------------------------
+
+Parsing concatenated input: id = number ; if ( id == number ) { id = number ; } 
+
+Parsing line 1: id = number ; if ( id == number ) { id = number ; } 
+Debug: Non-terminals in CFG:
+S (start-state), StmtList (non-terminal), Stmt (non-terminal), Expr (non-terminal), ExprPrime (non-terminal), Term (non-terminal), Cond (non-terminal), RelOp (non-terminal), 
+Debug: Terminals in CFG:
+id (terminal), number (terminal), = (terminal), + (terminal), - (terminal), ; (terminal), if (terminal), ( (terminal), ) (terminal), { (terminal), } (terminal), > (terminal), < (terminal), == (terminal), != (terminal), 
+Stack                         Input                         Action                                  
+----------------------------------------------------------------------------------------------------
+$ S                           id = number ; if ( id == number ) { id = number ; } $ Expand S -> StmtList                    
+$ StmtList                    id = number ; if ( id == number ) { id = number ; } $ Expand StmtList -> Stmt StmtList        
+$ StmtList Stmt               id = number ; if ( id == number ) { id = number ; } $ Expand Stmt -> id = Expr ;              
+$ StmtList ; Expr = id        id = number ; if ( id == number ) { id = number ; } $ Match id                                
+$ StmtList ; Expr =           = number ; if ( id == number ) { id = number ; } $ Match =                                 
+$ StmtList ; Expr             number ; if ( id == number ) { id = number ; } $ Expand Expr -> Term ExprPrime           
+$ StmtList ; ExprPrime Term   number ; if ( id == number ) { id = number ; } $ Expand Term -> number                   
+$ StmtList ; ExprPrime number number ; if ( id == number ) { id = number ; } $ Match number                            
+$ StmtList ; ExprPrime        ; if ( id == number ) { id = number ; } $ Expand ExprPrime -> epsilon             
+$ StmtList ;                  ; if ( id == number ) { id = number ; } $ Match ;                                 
+$ StmtList                    if ( id == number ) { id = number ; } $ Expand StmtList -> Stmt StmtList        
+$ StmtList Stmt               if ( id == number ) { id = number ; } $ Expand Stmt -> if ( Cond ) { StmtList } 
+$ StmtList } StmtList { ) Cond ( if if ( id == number ) { id = number ; } $ Match if                                
+$ StmtList } StmtList { ) Cond ( ( id == number ) { id = number ; } $ Match (                                 
+$ StmtList } StmtList { ) Cond id == number ) { id = number ; } $ Expand Cond -> Expr RelOp Expr          
+$ StmtList } StmtList { ) Expr RelOp Expr id == number ) { id = number ; } $ Expand Expr -> Term ExprPrime           
+$ StmtList } StmtList { ) Expr RelOp ExprPrime Term id == number ) { id = number ; } $ Expand Term -> id                       
+$ StmtList } StmtList { ) Expr RelOp ExprPrime id id == number ) { id = number ; } $ Match id                                
+$ StmtList } StmtList { ) Expr RelOp ExprPrime == number ) { id = number ; } $ Expand ExprPrime -> epsilon             
+$ StmtList } StmtList { ) Expr RelOp == number ) { id = number ; } $ Expand RelOp -> ==                      
+$ StmtList } StmtList { ) Expr == == number ) { id = number ; } $ Match ==                                
+$ StmtList } StmtList { ) Expr number ) { id = number ; } $  Expand Expr -> Term ExprPrime           
+$ StmtList } StmtList { ) ExprPrime Term number ) { id = number ; } $  Expand Term -> number                   
+$ StmtList } StmtList { ) ExprPrime number number ) { id = number ; } $  Match number                            
+$ StmtList } StmtList { ) ExprPrime ) { id = number ; } $         Expand ExprPrime -> epsilon             
+$ StmtList } StmtList { )     ) { id = number ; } $         Match )                                 
+$ StmtList } StmtList {       { id = number ; } $           Match {                                 
+$ StmtList } StmtList         id = number ; } $             Expand StmtList -> Stmt StmtList        
+$ StmtList } StmtList Stmt    id = number ; } $             Expand Stmt -> id = Expr ;              
+$ StmtList } StmtList ; Expr = id id = number ; } $             Match id                                
+$ StmtList } StmtList ; Expr = = number ; } $                Match =                                 
+$ StmtList } StmtList ; Expr  number ; } $                  Expand Expr -> Term ExprPrime           
+$ StmtList } StmtList ; ExprPrime Term number ; } $                  Expand Term -> number                   
+$ StmtList } StmtList ; ExprPrime number number ; } $                  Match number                            
+$ StmtList } StmtList ; ExprPrime ; } $                         Expand ExprPrime -> epsilon             
+$ StmtList } StmtList ;       ; } $                         Match ;                                 
+$ StmtList } StmtList         } $                           Expand StmtList -> epsilon              
+$ StmtList }                  } $                           Match }                                 
+$ StmtList                    $                             Expand StmtList -> epsilon              
+$                             $                             Accept                                  
+----------------------------------------------------------------------------------------------------
+Parsing successful!
