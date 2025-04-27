@@ -9,13 +9,28 @@
 class ParsingTable {
 private:
     std::vector<std::vector<std::string>> table;
-    std::vector<std::string> nonTerminals;
-    std::vector<std::string> terminals;
+    std::vector<State> nonTerminals;
+    std::vector<State> terminals;
 
-    // Helper function to find the index of a symbol (NonTerminal or Terminal)
-    int findIndex(const std::vector<std::string>& symbols, const std::string& symbol) const {
-        for (int i = 0; i < symbols.size(); ++i) {
-            if (symbols[i] == symbol) {
+    // Helper function to find the index of a non-terminal by symbol
+    int findNonTerminalIndex(const std::string& symbol) const {
+        for (int i = 0; i < nonTerminals.size(); ++i) {
+            if (nonTerminals[i].getSymbol() == symbol) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Helper function to find the index of a terminal by symbol, or $ for the last column
+    int findTerminalIndex(const std::string& symbol) const {
+        // Special case for end marker
+        if (symbol == "$") {
+            return terminals.size(); // $ is the last column
+        }
+        
+        for (int i = 0; i < terminals.size(); ++i) {
+            if (terminals[i].getSymbol() == symbol) {
                 return i;
             }
         }
@@ -24,15 +39,15 @@ private:
 
 public:
     // Constructor to initialize the table
-    ParsingTable(const std::vector<std::string>& nonTerminals, const std::vector<std::string>& terminals)
-        : nonTerminals(nonTerminals), terminals(terminals) {
-        table.resize(nonTerminals.size(), std::vector<std::string>(terminals.size(), ""));
+    ParsingTable(const std::vector<std::vector<std::string>>& tableData, const std::vector<State>& nonTerminals, const std::vector<State>& terminals)
+        : table(tableData), nonTerminals(nonTerminals), terminals(terminals) {
+        // tableData is assumed to be correctly sized from CFG::computeLL1ParsingTable
     }
 
     // Add entry to parsing table
     void addEntry(const std::string& nonTerminal, const std::string& terminal, const std::string& production) {
-        int row = findIndex(nonTerminals, nonTerminal);
-        int col = findIndex(terminals, terminal);
+        int row = findNonTerminalIndex(nonTerminal);
+        int col = findTerminalIndex(terminal);
 
         if (row == -1 || col == -1) return;
 
@@ -45,31 +60,36 @@ public:
 
     // Get the production rule from the table
     std::string getEntry(const std::string& nonTerminal, const std::string& terminal) const {
-        int row = findIndex(nonTerminals, nonTerminal);
-        int col = findIndex(terminals, terminal);
-        
+        int row = findNonTerminalIndex(nonTerminal);
+        int col = findTerminalIndex(terminal);
+
         if (row == -1 || col == -1) return "";
         return table[row][col];
     }
 
-    // Get the list of terminals
+    // Get the list of terminal symbols
     std::vector<std::string> getTerminals() const {
-        return terminals;
+        std::vector<std::string> symbols;
+        for (const auto& state : terminals) {
+            symbols.push_back(state.getSymbol());
+        }
+        return symbols;
     }
 
     // Display the parsing table
     void display() const {
         std::cout << "\nLL(1) Parsing Table:\n";
         std::cout << "Non-Terminal\\Terminal\t";
-        
-        for (const std::string& terminal : terminals) {
-            std::cout << terminal << "\t";
+
+        for (const State& terminal : terminals) {
+            std::cout << terminal.getSymbol() << "\t";
         }
+        std::cout << "$\t"; // Include the end-of-input marker
         std::cout << "\n";
 
         for (int i = 0; i < nonTerminals.size(); ++i) {
-            std::cout << nonTerminals[i] << "\t\t";
-            for (int j = 0; j < terminals.size(); ++j) {
+            std::cout << nonTerminals[i].getSymbol() << "\t\t";
+            for (int j = 0; j < terminals.size() + 1; ++j) { // +1 for the $ column
                 std::cout << (table[i][j].empty() ? "-" : table[i][j]) << "\t";
             }
             std::cout << "\n";

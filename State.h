@@ -129,6 +129,10 @@ public:
         return this->symbol == other.symbol;
     }
 
+    bool operator!=(const State& other) const {
+        return !(*this == other);
+    }
+
     std::string removeSpaces(const std::string& str) {
         std::string result;
         for (char ch : str) {

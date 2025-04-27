@@ -1,0 +1,8 @@
+S -> StmtList
+StmtList -> Stmt StmtList | epsilon
+Stmt -> id = Expr ; | if ( Cond ) { StmtList }
+Expr -> Term ExprPrime
+ExprPrime -> + Term ExprPrime | - Term ExprPrime | epsilon
+Term -> id | number
+Cond -> id ExprPrime RelOp Expr | number ExprPrime RelOp Expr
+RelOp -> > | < | == | !=

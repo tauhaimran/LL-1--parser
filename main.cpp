@@ -1,37 +1,40 @@
 #include <iostream>
 #include <fstream>
+#include "CFG.h"
+#include "CFGReader.h"
+#include "ParsingTable.h"
 #include "parser.h"
-#include "CFGManual.h"
 
 int main() {
-    // Initialize CFG object
     CFG cfg;
-    createManualCFG(cfg); // Populates cfg with grammar
-    cfg.leftFactoring();
+    if (!CFGReader::readFromFile("cfg.txt", cfg)) {
+        std::cerr << "Failed to read CFG from file" << std::endl;
+        return 1;
+    }
+
     cfg.eliminateLeftRecursion();
-    cfg.computeALLFirstSets();
-    // cfg.computeAllFollowSets(); // Uncomment if needed
-
-    // Define non-terminals and terminals (include $)
-    std::vector<std::string> nonTerminals = {"S", "StmtList", "Stmt", "Expr", "ExprPrime", "Term", "Cond", "RelOp"};
-    std::vector<std::string> terminals = {"id", "number", "=", "+", "-", ";", "if", "(", ")", "{", "}", ">", "<", "==", "!=", "$"};
-
-    // Create and initialize the parsing table
-    ParsingTable table(nonTerminals, terminals);
-    initializeParsingTable(table);
-
-    // Display CFG and parsing table
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "Grammar / CFG: " << std::endl;
     cfg.display();
     cfg.showNonTerminals();
     cfg.showTerminals();
     std::cout << "----------------------------------------" << std::endl;
-    table.display();
-    std::cout << "Parsing input file: input.txt" << std::endl;
+
+    cfg.computeALLFirstSets();
+    cfg.computeAllFollowSets();
+
+    std::cout << "FIRST Sets:\n";
+    cfg.displayFirstSets();
+    std::cout << "----------------------------------------" << std::endl;
+    std::cout << "FOLLOW Sets:\n";
+    cfg.displayFollowSets();
     std::cout << "----------------------------------------" << std::endl;
 
-    // Create and run parser
+    std::vector<std::vector<std::string>> tableData = cfg.computeLL1ParsingTable();
+
+    ParsingTable table(tableData, cfg.getNonTerminals(), cfg.getTerminals());
+    table.display();
+
     Parser parser(table, "input.txt", cfg);
     parser.parse();
 
