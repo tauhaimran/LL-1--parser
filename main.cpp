@@ -57,9 +57,9 @@ int main() {
     std::cout << "Parsing input file: " << inputFile << std::endl;
     std::cout << "Parsing content: " << std::endl;
     std::cout << "----------------------------------------" << std::endl;
-    parser.displayInput();
-    std::cout << "----------------------------------------" << std::endl;
-    parser.displayStack();
+    //parser.displayInput();
+    //std::cout << "----------------------------------------" << std::endl;
+    //parser.displayStack();
     std::cout << "----------------------------------------" << std::endl;
     std::cout << std::endl;
     std::cout << "Parsing result: " << std::endl;
